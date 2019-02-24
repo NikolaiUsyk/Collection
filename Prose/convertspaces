@@ -1,0 +1,35 @@
+
+
+f=$1
+fa=dummy1.md
+fb=dummy2.md
+dos2unix $f
+
+echo $f
+
+# Get Rid of all spaces with } because } is extremely uncommon in non code writing.
+cat $f | tr "\n" "}" > $fa
+
+# Turn double spaces, }}, into a new character, ]]
+cat $fa | sed "s/}}/]]/g" > $fb
+
+# Take the single one (since double is changed) and turn it into a space.
+cat $fb | tr "}" " " > $fa
+
+# Turn the double symbol into a new line. And all paragraphs are one line
+cat $fa | tr "]" "\n" > $fb
+
+# Now, make each .space into a .newline and each sentence is it's own line.
+cat $fb | sed -e "s/\. /\.\n/g" -e "s/\? /\?\n/g" -e "s/\! /\!\n/g" -e "s/\.\" /\.\"\n/g" -e "s/\?\" /\?\"\n/g" -e "s/\!\" /\!\"\n/g" > $fa
+
+head -n 10 $fa
+
+echo -e "Final File: ${fa} \n"
+read -p "Does it look right? Enter y to overwrite original file: " answ
+
+if [[ "$answ" == "y" ]]; then
+    cat $fa > $f 
+    rm -f $fa
+fi
+
+
